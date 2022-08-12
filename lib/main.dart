@@ -22,10 +22,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Ecom - Users',
       // home: SplashScreen(),
-      initialRoute: AuthScreen.routeName,
+      initialRoute: SplashScreen.routeName,
       routes: {
         HomeScreen.routeName: (context) => const HomeScreen(),
         AuthScreen.routeName: (context) => const AuthScreen(),
+        SplashScreen.routeName: (context) => SplashScreen(),
       },
     );
   }

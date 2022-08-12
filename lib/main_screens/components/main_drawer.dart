@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecomflutter3users/consts/variables.dart';
 
@@ -42,7 +43,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   style: Theme.of(context)
                       .textTheme
                       .displaySmall!
-                      .copyWith(fontSize: 25,color: Colors.white),
+                      .copyWith(fontSize: 25, color: Colors.white),
                 ),
                 const Divider(
                   height: 10,
@@ -78,7 +79,9 @@ class _MainDrawerState extends State<MainDrawer> {
                 DrawerItem(
                   label: "Sign Out",
                   iconData: Icons.logout,
-                  onTap: () {},
+                  onTap: () {
+                    FirebaseAuth.instance.signOut();
+                  },
                 ),
 
                 /**Body**/

@@ -2,9 +2,13 @@ import 'dart:async';
 
 import 'package:ecomflutter3users/consts/appbar_theme.dart';
 import 'package:ecomflutter3users/main_screens/home/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../auth/auth_screen.dart';
+
 class SplashScreen extends StatefulWidget {
+  static const routeName = "/splashscreen";
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
@@ -13,10 +17,17 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   splashScreenTimer() {
-    Timer(
-      const Duration(seconds: 5),
-      () => Navigator.pushNamed(context, HomeScreen.routeName),
-    );
+    Timer(const Duration(seconds: 4), () async {
+      //user is already logged-in
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (c) => HomeScreen()));
+      } else //user is NOT already logged-in
+      {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (c) => AuthScreen()));
+      }
+    });
   }
 
   @override
