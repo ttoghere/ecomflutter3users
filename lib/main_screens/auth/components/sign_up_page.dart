@@ -1,7 +1,15 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecomflutter3users/consts/variables.dart';
 import 'package:ecomflutter3users/main_screens/auth/components/auth_shelf.dart';
+import 'package:ecomflutter3users/main_screens/splash/splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../components/loading_dialog.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -15,10 +23,10 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController confirmPasswordTextEditingController =
       TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  String downloadUrlImage = "";
 
   XFile? imgXFile;
   final ImagePicker imagePicker = ImagePicker();
-
   getImageFromGallery() async {
     imgXFile = await imagePicker.pickImage(source: ImageSource.gallery);
 
@@ -42,9 +50,34 @@ class _SignUpPageState extends State<SignUpPage> {
             emailTextEditingController.text.isNotEmpty &&
             passwordTextEditingController.text.isNotEmpty &&
             confirmPasswordTextEditingController.text.isNotEmpty) {
+          showDialog(
+              context: context,
+              builder: (c) {
+                return LoadingDialogWidget(
+                  message: "Registering your account",
+                );
+              });
+
           //1.upload image to storage
+          String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+          Reference storageRef = FirebaseStorage.instance
+              .ref()
+              .child("usersImages")
+              .child(fileName);
+
+          UploadTask uploadImageTask = storageRef.putFile(File(imgXFile!.path));
+
+          TaskSnapshot taskSnapshot = await uploadImageTask.whenComplete(() {});
+
+          await taskSnapshot.ref.getDownloadURL().then((urlImage) {
+            downloadUrlImage = urlImage;
+          });
+
           //2. save the user info to firestore database
+          saveInformationToDatabase();
         } else {
+          Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(
                   "Please complete the form. Do not leave any text field empty.")));
@@ -55,6 +88,54 @@ class _SignUpPageState extends State<SignUpPage> {
             content: Text("Password and Confirm Password do not match.")));
       }
     }
+  }
+
+  saveInformationToDatabase() async {
+    //authenticate the user first
+    User? currentUser;
+
+    await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+      email: emailTextEditingController.text.trim(),
+      password: passwordTextEditingController.text.trim(),
+    )
+        .then((auth) {
+      currentUser = auth.user;
+    }).catchError((errorMessage) {
+      Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text( "Error Occurred: \n $errorMessage")));
+
+    });
+
+    if (currentUser != null) {
+      //save info to database and save locally
+      saveInfoToFirestoreAndLocally(currentUser!);
+    }
+  }
+
+  saveInfoToFirestoreAndLocally(User currentUser) async {
+    //save to firestore
+    FirebaseFirestore.instance.collection("users").doc(currentUser.uid).set({
+      "uid": currentUser.uid,
+      "email": currentUser.email,
+      "name": nameTextEditingController.text.trim(),
+      "photoUrl": downloadUrlImage,
+      "status": "approved",
+      "userCart": ["initialValue"],
+    });
+
+    //save locally
+    sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences!.setString("uid", currentUser.uid);
+    await sharedPreferences!.setString("email", currentUser.email!);
+    await sharedPreferences!
+        .setString("name", nameTextEditingController.text.trim());
+    await sharedPreferences!.setString("photoUrl", downloadUrlImage);
+    await sharedPreferences!.setStringList("userCart", ["initialValue"]);
+
+    Navigator.push(
+        context, MaterialPageRoute(builder: (c) => SplashScreen()));
   }
 
   @override
