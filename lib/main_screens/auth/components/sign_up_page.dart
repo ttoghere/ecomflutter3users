@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:ecomflutter3users/main_screens/auth/components/auth_shelf.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -14,6 +16,47 @@ class _SignUpPageState extends State<SignUpPage> {
       TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  XFile? imgXFile;
+  final ImagePicker imagePicker = ImagePicker();
+
+  getImageFromGallery() async {
+    imgXFile = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      imgXFile;
+    });
+  }
+
+  formValidation() async {
+    if (imgXFile == null) //image is not selected
+    {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please select an image.")));
+    } else //image is already selected
+    {
+      //password is equal to confirm password
+      if (passwordTextEditingController.text ==
+          confirmPasswordTextEditingController.text) {
+        //check email, pass, confirm password & name text fields
+        if (nameTextEditingController.text.isNotEmpty &&
+            emailTextEditingController.text.isNotEmpty &&
+            passwordTextEditingController.text.isNotEmpty &&
+            confirmPasswordTextEditingController.text.isNotEmpty) {
+          //1.upload image to storage
+          //2. save the user info to firestore database
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                  "Please complete the form. Do not leave any text field empty.")));
+        }
+      } else //password is NOT equal to confirm password
+      {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Password and Confirm Password do not match.")));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -24,15 +67,24 @@ class _SignUpPageState extends State<SignUpPage> {
               height: 12,
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                getImageFromGallery();
+              },
               child: CircleAvatar(
+                backgroundImage: imgXFile == null
+                    ? null
+                    : FileImage(
+                        File(imgXFile!.path),
+                      ),
                 radius: MediaQuery.of(context).size.width * 0.20,
                 backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.add_photo_alternate,
-                  color: Colors.grey,
-                  size: MediaQuery.of(context).size.width * 0.20,
-                ),
+                child: imgXFile == null
+                    ? Icon(
+                        Icons.add_photo_alternate,
+                        color: Colors.grey,
+                        size: MediaQuery.of(context).size.width * 0.20,
+                      )
+                    : null,
               ),
             ),
             const SizedBox(
@@ -82,7 +134,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  formValidation();
+                },
                 child: const Text(
                   "Sign Up",
                   style: TextStyle(

@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Ecom - Users',
+      // home: SplashScreen(),
       initialRoute: AuthScreen.routeName,
       routes: {
         HomeScreen.routeName: (context) => const HomeScreen(),
