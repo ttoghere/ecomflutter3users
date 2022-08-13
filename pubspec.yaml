@@ -27,6 +27,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  carousel_slider: ^4.1.1
+  cart_stepper: ^2.0.2
   cloud_firestore: ^3.4.4
   cupertino_icons: ^1.0.2
   firebase_auth: ^3.6.3
@@ -37,6 +39,7 @@ dependencies:
   image_picker: ^0.8.5+3
   provider: ^6.0.3
   shared_preferences: ^2.0.15
+  smooth_star_rating_nsafe: ^1.0.0+1
 
 dev_dependencies:
   flutter_lints: ^2.0.0
