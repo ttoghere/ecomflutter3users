@@ -21,7 +21,7 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBarWithCartBadge(
         sellerUID: widget.model!.sellerUID.toString(),
       ),

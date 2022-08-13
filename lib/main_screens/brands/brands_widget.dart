@@ -24,7 +24,7 @@ class _BrandsWidgetState extends State<BrandsWidget> {
         )));
       },
       child: Card(
-        color: Colors.black,
+        color: Colors.white60,
         elevation: 10,
         shadowColor: Colors.grey,
         child: Padding(

@@ -26,7 +26,7 @@ class _ItemWidgetState extends State<ItemWidget> {
                     )));
       },
       child: Card(
-        color: Colors.black,
+        color: Colors.white,
         elevation: 10,
         shadowColor: Colors.grey,
         child: Padding(

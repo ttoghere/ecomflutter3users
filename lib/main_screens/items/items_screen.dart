@@ -20,7 +20,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white54,
       appBar: AppBar(
         flexibleSpace: Container(decoration: container),
         title: const Text(
