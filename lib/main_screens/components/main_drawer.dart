@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:ecomflutter3users/main_screens/auth/auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ecomflutter3users/consts/variables.dart';
@@ -81,6 +82,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   iconData: Icons.logout,
                   onTap: () {
                     FirebaseAuth.instance.signOut();
+                    Navigator.of(context).pushNamed(AuthScreen.routeName);
                   },
                 ),
 
